@@ -6,6 +6,7 @@ def count_vertices(edges):
         vertices.add(edge[1])
     return len(vertices)
 
+
 def get_vertices(edges):
     """Получение списка вершин из списка ребер."""
     vertices = set()
@@ -14,28 +15,29 @@ def get_vertices(edges):
         vertices.add(edge[1])
     return list(vertices)
 
+
 def wave_algorithm(edges, start, end):
     """Реализация волнового алгоритма."""
     vertices = get_vertices(edges)
     num_vertices = count_vertices(edges)
-    
+
     # Инициализация массива пройденных вершин
     visited = {v: 0 for v in vertices}
     visited[start] = 1
-    
+
     # Инициализация массива предков для восстановления пути
     parent = {v: None for v in vertices}
-    
+
     # Флаг для проверки, найдена ли конечная вершина
     found = False
-    
+
     # Шаг волнового алгоритма
     step = 1
-    
+
     while True:
         # Флаг для проверки, были ли найдены новые вершины на текущем шаге
         new_vertices_found = False
-        
+
         # Проходим по всем вершинам, которые были посещены на предыдущем шаге
         for v in vertices:
             if visited[v] == step:
@@ -49,29 +51,36 @@ def wave_algorithm(edges, start, end):
                         visited[edge[0]] = step + 1
                         parent[edge[0]] = v
                         new_vertices_found = True
-        
+
         # Если конечная вершина найдена, выходим из цикла
         if visited[end] != 0:
             found = True
             break
-        
+
         # Если новые вершины не найдены, выходим из цикла
         if not new_vertices_found:
             break
-        
+
         step += 1
-    
+
     # Восстановление пути
     if found:
-        path = []
-        current = end
-        while current is not None:
-            path.append(current)
-            current = parent[current]
-        path.reverse()
+        path = recover_path(parent, end)
         return path, visited
     else:
         return None, visited
+
+
+def recover_path(parent, end):
+    """Восстановление пути от конечной вершины до начальной."""
+    path = []
+    current = end
+    while current is not None:
+        path.append(current)
+        current = parent[current]
+    path.reverse()
+    return path
+
 
 # Пример использования
 edges = [(1, 2), (2, 3), (2, 4), (4, 5), (1, 6), (6, 7), (4, 5)]
